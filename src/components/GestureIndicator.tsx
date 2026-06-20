@@ -9,8 +9,9 @@ interface GestureIndicatorProps {
 const gestureInfo: Record<GestureType, { label: string; icon: string; color: string }> = {
   draw: { label: 'Drawing', icon: '✏️', color: '#00FFFF' },
   pause: { label: 'Paused', icon: '✋', color: '#FFFF00' },
+  fist: { label: 'Grab / Pause', icon: '✊', color: '#FFFF00' },
   erase: { label: 'Erasing', icon: '🧹', color: '#FF6600' },
-  'fist-erase': { label: 'Fist Erasing', icon: '✊', color: '#FF6600' },
+  'palm-erase': { label: 'Palm Erasing', icon: '🖐️', color: '#FF6600' },
   pointer: { label: 'Pointing', icon: '👆', color: '#BF00FF' },
   clear: { label: 'Clearing!', icon: '🗑️', color: '#FF3333' },
   'swipe-left': { label: '← Swipe', icon: '👈', color: '#0088FF' },

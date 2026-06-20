@@ -20,16 +20,22 @@ const steps = [
     visual: '☝️ = ✏️ Draw',
   },
   {
-    icon: '✋',
-    title: 'Pause Gesture',
-    description: 'Open your palm (all fingers up) to pause drawing and move freely.',
-    visual: '✋ = ⏸️ Pause',
+    icon: '🖐️',
+    title: 'Palm Erase',
+    description: 'Open your palm (all fingers up) to act like a giant whiteboard eraser.',
+    visual: '🖐️ = 🧹 Erase',
   },
   {
     icon: '✌️',
     title: 'Pointer Mode',
     description: 'Peace sign (index + middle up) to just point without drawing.',
     visual: '✌️ = 👆 Point',
+  },
+  {
+    icon: '✊',
+    title: 'Grab / Pause',
+    description: 'Make a fist to pause drawing and move your hand freely without leaving a trail.',
+    visual: '✊ = ⏸️ Pause',
   },
   {
     icon: '🖐️',

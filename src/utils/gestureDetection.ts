@@ -85,7 +85,7 @@ function getHandState(handIndex: number): HandSwipeState {
  */
 function smoothGesture(rawGesture: GestureType, state: HandSwipeState): GestureType {
   // Always allow high-priority gestures through immediately
-  const immediateGestures: GestureType[] = ['clear', 'swipe-left', 'swipe-right', 'fist-erase'];
+  const immediateGestures: GestureType[] = ['clear', 'swipe-left', 'swipe-right', 'palm-erase'];
   if (immediateGestures.includes(rawGesture)) {
     state.gestureHistory = [rawGesture];
     state.lastConfirmedGesture = rawGesture;
@@ -136,12 +136,12 @@ export function detectGesture(landmarks: HandLandmark[], handIndex: number = 0):
   const allUp = fingers.index && fingers.middle && fingers.ring && fingers.pinky;
   const state = getHandState(handIndex);
 
-  // ─── Fist detection (all fingers down = erase) ───
+  // ─── Fist detection (all fingers closed) ───
   if (isFist(fingers)) {
     state.prevWristX = landmarks[LANDMARK_INDICES.WRIST].x;
     state.swipeAccumulator = 0;
     return {
-      type: 'fist-erase',
+      type: 'fist',
       confidence: 0.9,
       fingerStates: fingers,
     };
@@ -198,8 +198,8 @@ export function detectGesture(landmarks: HandLandmark[], handIndex: number = 0):
   let confidence = 0.5;
 
   if (allUp) {
-    // Pause: open palm (all fingers up)
-    rawGesture = 'pause';
+    // Erase: open palm (all fingers up)
+    rawGesture = 'palm-erase';
     confidence = 0.85;
   } else if (fingers.index && !fingers.middle) {
     // Draw: index up, middle down

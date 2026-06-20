@@ -375,7 +375,7 @@ const App: React.FC = () => {
 
         // Determine drawing state
         let shouldDraw = gestureType === 'draw' && s.drawingMode === 'draw';
-        let shouldErase = (gestureType === 'draw' && s.drawingMode === 'eraser') || gestureType === 'fist-erase';
+        let shouldErase = (gestureType === 'draw' && s.drawingMode === 'eraser') || gestureType === 'palm-erase';
 
         // Lip reading behavior override (pursed lips behave like eraser)
         if (s.lipControlActions) {
@@ -424,12 +424,12 @@ const App: React.FC = () => {
           }
           currentDrawingState[handKey] = true;
           
-          const eraseRadius = gestureType === 'fist-erase' ? s.brushSize * 6 : s.brushSize * 1.5;
+          const eraseRadius = gestureType === 'palm-erase' ? s.brushSize * 8 : s.brushSize * 1.5;
           addPoint(point, { ...s, drawingMode: 'eraser', brushSize: eraseRadius }, handKey);
 
           // Emit falling eraser dust particles for a tactile feel
           if (s.particlesEnabled) {
-            const count = gestureType === 'fist-erase' ? 6 : 2;
+            const count = gestureType === 'palm-erase' ? 8 : 2;
             particleSystemRef.current.emit(point, 'rgba(220, 230, 255, 0.4)', count);
           }
         } else {
@@ -562,9 +562,9 @@ const App: React.FC = () => {
           const isLeft = key === 'Left';
           const isHandDrawing = activeDrawingHandsRef.current[key];
           
-          // Draw customized large ring cursor if fist-erasing
-          const isFistErase = !isLeft && currentGestureRef.current === 'fist-erase';
-          const isErasing = s.drawingMode === 'eraser' || isFistErase || (s.lipControlActions && mouthStateRef.current === 'pursed');
+          // Draw customized large ring cursor if palm-erasing
+          const isPalmErase = !isLeft && currentGestureRef.current === 'palm-erase';
+          const isErasing = s.drawingMode === 'eraser' || isPalmErase || (s.lipControlActions && mouthStateRef.current === 'pursed');
           
           const baseColor = s.rainbowBrush ? getRainbowColor(performance.now()) : s.strokeColor;
           const color = isLeft ? getShiftedColor(baseColor) : baseColor;
@@ -576,7 +576,7 @@ const App: React.FC = () => {
             cursorCtx.strokeStyle = 'rgba(255, 80, 80, 0.8)';
             cursorCtx.lineWidth = 1.5;
             cursorCtx.beginPath();
-            const radius = isFistErase ? s.brushSize * 6 : s.brushSize * 1.5;
+            const radius = isPalmErase ? s.brushSize * 8 : s.brushSize * 1.5;
             cursorCtx.arc(lastPoint.x, lastPoint.y, radius, 0, Math.PI * 2);
             cursorCtx.stroke();
             

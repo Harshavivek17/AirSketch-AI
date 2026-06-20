@@ -18,8 +18,9 @@ export type DrawingMode = 'draw' | 'eraser' | 'pointer';
 export type GestureType =
   | 'draw'
   | 'pause'
+  | 'fist'
   | 'erase'
-  | 'fist-erase'
+  | 'palm-erase'
   | 'pointer'
   | 'clear'
   | 'swipe-left'
