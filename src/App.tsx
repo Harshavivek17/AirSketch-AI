@@ -40,9 +40,10 @@ const App: React.FC = () => {
   const [fps, setFps] = useState(0);
   const [canvasSize, setCanvasSize] = useState({ width: 1280, height: 720 });
   const [showOnboarding, setShowOnboarding] = useState(
-    !localStorage.getItem('glow-finger-draw-onboarded')
+    !localStorage.getItem('airsketch-ai-onboarded')
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loadingStatus, setLoadingStatus] = useState('Initializing Camera...');
 
   // Lip / Mouth State
   const [mouthState, setMouthState] = useState<'neutral' | 'open' | 'smile' | 'pursed'>('neutral');
@@ -244,17 +245,27 @@ const App: React.FC = () => {
 
   const handleSave = useCallback(() => {
     const canvas = drawCanvasRef.current;
-    if (canvas) saveCanvasAsPNG(canvas, 'glow-finger-drawing.png', false);
+    if (canvas) saveCanvasAsPNG(canvas, 'airsketch-drawing.png', false);
   }, []);
 
   const handleSaveTransparent = useCallback(() => {
     const canvas = drawCanvasRef.current;
-    if (canvas) saveCanvasAsPNG(canvas, 'glow-finger-drawing-transparent.png', true);
+    if (canvas) saveCanvasAsPNG(canvas, 'airsketch-drawing-transparent.png', true);
   }, []);
 
   const handleStartCamera = useCallback(() => {
     setCameraEnabled(true);
     setErrorMessage(null);
+    setLoadingStatus('Initializing Camera...');
+    // Cycle through loading status messages for UX delight
+    const timer1 = setTimeout(() => setLoadingStatus('Loading AI Hand Tracking...'), 1500);
+    const timer2 = setTimeout(() => setLoadingStatus('Warming Up Neural Networks...'), 3500);
+    const timer3 = setTimeout(() => setLoadingStatus('Almost Ready...'), 5500);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
   }, []);
 
   const handleStopCamera = useCallback(() => {
@@ -634,7 +645,7 @@ const App: React.FC = () => {
   
   let bgGradient = 'radial-gradient(ellipse at center, rgba(0,30,50,0.5) 0%, rgba(10,10,15,1) 70%)';
   if (theme === 'neumorphic-light') {
-    bgGradient = 'radial-gradient(ellipse at center, rgba(230,235,245,0.7) 0%, rgba(10,10,15,1) 90%)';
+    bgGradient = 'radial-gradient(ellipse at center, rgba(230,235,245,0.3) 0%, rgba(10,10,15,1) 85%)';
   } else if (theme === 'neumorphic-dark') {
     bgGradient = 'radial-gradient(ellipse at center, rgba(30,30,42,0.65) 0%, rgba(10,10,15,1) 90%)';
   }
@@ -685,10 +696,10 @@ const App: React.FC = () => {
         className="fixed bottom-4 right-4 z-50 text-right pointer-events-none"
       >
         <h1 className="font-display text-sm md:text-base font-bold tracking-wider text-neon-cyan neon-text">
-          GLOW FINGER DRAW
+          AIRSKETCH AI
         </h1>
-        <p className="text-[9px] md:text-[10px] text-white/25 mt-0.5">
-          Draw glowing letters in the air using your index finger
+        <p className="text-[9px] md:text-[10px] text-white/25 mt-0.5 font-sans">
+          AI-powered air drawing with hand gesture control
         </p>
       </motion.div>
 
@@ -766,13 +777,13 @@ const App: React.FC = () => {
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               className="text-6xl mb-6"
             >
-              ✨
+              🎨
             </motion.div>
             <h2 className="font-display text-2xl md:text-3xl font-bold text-white/80 mb-2">
-              Ready to Draw with Light
+              Ready to Sketch in the Air
             </h2>
-            <p className="text-sm text-white/40 mb-6 max-w-sm mx-auto">
-              Start the camera and move your index finger to create glowing strokes in the air
+            <p className="text-sm text-white/40 mb-6 max-w-sm mx-auto font-sans">
+              Point your index finger at the camera and draw — AI tracks your hand in real time
             </p>
             <button
               onClick={handleStartCamera}
@@ -793,23 +804,54 @@ const App: React.FC = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 z-30 flex items-center justify-center"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(0,20,30,0.85) 0%, rgba(0,0,0,0.75) 100%)',
+            backdropFilter: 'blur(12px)',
+          }}
         >
-          <div className={`text-center p-8 border ${isNeumorphic ? 'neumorphic-panel' : 'glass-panel'}`}>
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-              className="text-4xl mb-4 inline-block"
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="loading-glow-border rounded-2xl"
+          >
+            <div
+              className="text-center px-12 py-10 rounded-2xl"
+              style={{
+                background: 'linear-gradient(135deg, rgba(15,15,25,0.95), rgba(10,10,20,0.98))',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.5), 0 0 80px rgba(0,255,255,0.05)',
+              }}
             >
-              🤖
-            </motion.div>
-            <p className={`text-sm font-semibold ${isNeumorphic ? 'text-[#0088FF]' : 'text-neon-cyan'}`}>
-              Loading AI ML Engines...
-            </p>
-            <p className={`text-xs mt-1 ${isNeumorphic ? 'text-black/30' : 'text-white/30'}`}>
-              Spawning hands, face mesh, and pose structures
-            </p>
-          </div>
+              {/* Animated dual-ring spinner */}
+              <div className="flex justify-center mb-6">
+                <div className="loading-ring" />
+              </div>
+
+              {/* Status text with smooth transition */}
+              <motion.p
+                key={loadingStatus}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="text-sm font-semibold text-neon-cyan font-sans mb-2"
+              >
+                {loadingStatus}
+              </motion.p>
+
+              {/* Animated dots */}
+              <div className="loading-dots mt-3">
+                <span />
+                <span />
+                <span />
+              </div>
+
+              <p className="text-[10px] text-white/25 mt-4 font-sans">
+                Setting up hand, face & pose tracking
+              </p>
+            </div>
+          </motion.div>
         </motion.div>
       )}
 

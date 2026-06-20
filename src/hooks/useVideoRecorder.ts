@@ -39,7 +39,7 @@ export function useVideoRecorder(): UseVideoRecorderReturn {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         const ext = mimeType.includes('webm') ? 'webm' : 'mp4';
-        link.download = `glow-finger-recording.${ext}`;
+        link.download = `airsketch-recording.${ext}`;
         link.href = url;
         link.click();
         URL.revokeObjectURL(url);

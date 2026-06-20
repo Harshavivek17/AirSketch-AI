@@ -18,7 +18,7 @@
   body {
     background: #0a0a0f;
     color: white;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
   }
 
   ::-webkit-scrollbar {
@@ -467,3 +467,94 @@
     text-shadow: 0 0 10px currentColor, 0 0 30px currentColor;
   }
 }
+
+/* ─── Premium Loading Animation ─── */
+.loading-ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 255, 255, 0.08);
+  border-top: 2px solid rgba(0, 255, 255, 0.7);
+  animation: loading-spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  position: relative;
+}
+
+.loading-ring::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 136, 255, 0.06);
+  border-bottom: 2px solid rgba(0, 136, 255, 0.5);
+  animation: loading-spin 1.8s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
+}
+
+@keyframes loading-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(0, 255, 255, 0.6);
+  animation: loading-dot-pulse 1.4s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes loading-dot-pulse {
+  0%, 80%, 100% {
+    transform: scale(0.5);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.loading-glow-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-glow-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(0,255,255,0.3), rgba(0,136,255,0.1), rgba(191,0,255,0.2), rgba(0,255,255,0.3));
+  background-size: 300% 300%;
+  animation: loading-border-shift 3s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+@keyframes loading-border-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ─── Gesture auto-hide transition ─── */
+.gesture-indicator-fade {
+  transition: opacity 0.4s ease-out;
+}
+

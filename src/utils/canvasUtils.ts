@@ -153,7 +153,7 @@ export function clearCanvas(canvas: HTMLCanvasElement): void {
  */
 export function saveCanvasAsPNG(
   canvas: HTMLCanvasElement,
-  filename: string = 'glow-finger-drawing.png',
+  filename: string = 'airsketch-drawing.png',
   transparent: boolean = true
 ): void {
   const tempCanvas = document.createElement('canvas');

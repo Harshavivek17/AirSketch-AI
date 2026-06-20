@@ -527,7 +527,7 @@ const ControlsPanel: React.FC<ControlsPanelProps> = ({
   return (
     <>
       {/* Desktop panel */}
-      <div className="hidden md:block fixed top-3 left-3 z-50" style={{ width: '280px' }}>
+      <div className="hidden md:block fixed top-3 left-3 z-50" style={{ width: '320px' }}>
         <motion.div
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}

@@ -202,5 +202,5 @@ export const DEFAULT_SETTINGS: AppSettings = {
   lipTracking: false,
   lipControlActions: false,
   rainbowBrush: false,
-  panelTheme: 'neumorphic-light',
+  panelTheme: 'neumorphic-dark',
 };

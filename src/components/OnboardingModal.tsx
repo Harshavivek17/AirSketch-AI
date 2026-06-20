@@ -63,7 +63,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
   };
 
   const handleDismiss = () => {
-    localStorage.setItem('glow-finger-draw-onboarded', 'true');
+    localStorage.setItem('airsketch-ai-onboarded', 'true');
     onClose();
   };
 
@@ -87,9 +87,9 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
             {/* Header */}
             <div className="text-center mb-6">
               <h2 className="font-display text-2xl font-bold text-neon-cyan neon-text mb-1">
-                Glow Finger Draw
+                AirSketch AI
               </h2>
-              <p className="text-xs text-white/40">Learn the gestures</p>
+              <p className="text-xs text-white/40 font-sans">Learn the gestures</p>
             </div>
 
             {/* Step content */}

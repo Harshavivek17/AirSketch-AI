@@ -48,6 +48,10 @@ interface HandSwipeState {
   prevWristX: number | null;
   swipeAccumulator: number;
   swipeVelocityBuffer: number[];
+  // Gesture smoothing: history buffer + debounce
+  gestureHistory: GestureType[];
+  lastConfirmedGesture: GestureType;
+  lastGestureChangeTime: number;
 }
 
 const handStates: Map<number, HandSwipeState> = new Map();
@@ -57,11 +61,74 @@ const SWIPE_THRESHOLD = 0.12;
 const SWIPE_VELOCITY_THRESHOLD = 0.015;
 const CLEAR_HOLD_DURATION = 2000;
 
+// Smoothing constants
+const GESTURE_HISTORY_SIZE = 5;       // frames of history for majority vote
+const GESTURE_DEBOUNCE_MS = 120;      // minimum ms between gesture changes
+
 function getHandState(handIndex: number): HandSwipeState {
   if (!handStates.has(handIndex)) {
-    handStates.set(handIndex, { prevWristX: null, swipeAccumulator: 0, swipeVelocityBuffer: [] });
+    handStates.set(handIndex, {
+      prevWristX: null,
+      swipeAccumulator: 0,
+      swipeVelocityBuffer: [],
+      gestureHistory: [],
+      lastConfirmedGesture: 'none',
+      lastGestureChangeTime: 0,
+    });
   }
   return handStates.get(handIndex)!;
+}
+
+/**
+ * Smooth gesture output using majority-vote over recent frames + temporal debounce.
+ * Prevents flickering when fingers are in transition between gestures.
+ */
+function smoothGesture(rawGesture: GestureType, state: HandSwipeState): GestureType {
+  // Always allow high-priority gestures through immediately
+  const immediateGestures: GestureType[] = ['clear', 'swipe-left', 'swipe-right', 'fist-erase'];
+  if (immediateGestures.includes(rawGesture)) {
+    state.gestureHistory = [rawGesture];
+    state.lastConfirmedGesture = rawGesture;
+    state.lastGestureChangeTime = Date.now();
+    return rawGesture;
+  }
+
+  // Push to history buffer
+  state.gestureHistory.push(rawGesture);
+  if (state.gestureHistory.length > GESTURE_HISTORY_SIZE) {
+    state.gestureHistory.shift();
+  }
+
+  // Majority vote: find the most common gesture in the buffer
+  const counts = new Map<GestureType, number>();
+  for (const g of state.gestureHistory) {
+    counts.set(g, (counts.get(g) || 0) + 1);
+  }
+  let majorityGesture = rawGesture;
+  let maxCount = 0;
+  counts.forEach((count, gesture) => {
+    if (count > maxCount) {
+      maxCount = count;
+      majorityGesture = gesture;
+    }
+  });
+
+  // Temporal debounce: don't switch if we changed too recently
+  const now = Date.now();
+  if (majorityGesture !== state.lastConfirmedGesture) {
+    if (now - state.lastGestureChangeTime < GESTURE_DEBOUNCE_MS) {
+      return state.lastConfirmedGesture;
+    }
+    // Require a supermajority (>60%) to actually switch
+    const needed = Math.ceil(state.gestureHistory.length * 0.6);
+    if (maxCount < needed) {
+      return state.lastConfirmedGesture;
+    }
+    state.lastConfirmedGesture = majorityGesture;
+    state.lastGestureChangeTime = now;
+  }
+
+  return state.lastConfirmedGesture;
 }
 
 export function detectGesture(landmarks: HandLandmark[], handIndex: number = 0): GestureState {
@@ -123,25 +190,30 @@ export function detectGesture(landmarks: HandLandmark[], handIndex: number = 0):
 
   // ─── Swipe takes priority when detected ───
   if (swipeGesture !== 'none') {
-    return { type: swipeGesture, confidence: 0.85, fingerStates: fingers };
+    return { type: smoothGesture(swipeGesture, state), confidence: 0.85, fingerStates: fingers };
   }
 
-  // ─── Pause: open palm (all fingers up) ───
+  // ─── Determine raw gesture ───
+  let rawGesture: GestureType = 'none';
+  let confidence = 0.5;
+
   if (allUp) {
-    return { type: 'pause', confidence: 0.85, fingerStates: fingers };
+    // Pause: open palm (all fingers up)
+    rawGesture = 'pause';
+    confidence = 0.85;
+  } else if (fingers.index && !fingers.middle) {
+    // Draw: index up, middle down
+    rawGesture = 'draw';
+    confidence = 0.9;
+  } else if (fingers.index && fingers.middle && !fingers.ring && !fingers.pinky) {
+    // Pointer: peace sign (index + middle up, rest down)
+    rawGesture = 'pointer';
+    confidence = 0.85;
   }
 
-  // ─── Draw: index up, middle down ───
-  if (fingers.index && !fingers.middle) {
-    return { type: 'draw', confidence: 0.9, fingerStates: fingers };
-  }
-
-  // ─── Pointer: peace sign (index + middle up, rest down) ───
-  if (fingers.index && fingers.middle && !fingers.ring && !fingers.pinky) {
-    return { type: 'pointer', confidence: 0.85, fingerStates: fingers };
-  }
-
-  return { type: 'none', confidence: 0.5, fingerStates: fingers };
+  // Apply smoothing to prevent flickering
+  const smoothed = smoothGesture(rawGesture, state);
+  return { type: smoothed, confidence, fingerStates: fingers };
 }
 
 export function resetGestureState(): void {
