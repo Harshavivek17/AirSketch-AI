@@ -111,8 +111,8 @@ export function useSmoothDrawing(): UseSmoothDrawingReturn {
 
     // Check for jumps
     const lastPoint = strokeState.lastDrawnPoint;
-    if (lastPoint && isJump(lastPoint, smoothed, 150)) {
-      // Reset stroke on jump
+    if (lastPoint && isJump(lastPoint, smoothed, 800)) {
+      // Reset stroke on massive jump (tracking glitch)
       endStroke(handKey);
       strokeState.smoothingBuffer = [point];
       strokeState.lastDrawnPoint = null;
@@ -125,19 +125,11 @@ export function useSmoothDrawing(): UseSmoothDrawingReturn {
       return;
     }
 
-    // Interpolate if too far from last point
-    if (lastPoint) {
-      const dist = distanceBetween(lastPoint, smoothed);
-      if (dist > 5) {
-        const interpolated = interpolatePoints(lastPoint, smoothed, 3);
-        strokeState.points.push(...interpolated);
-      } else {
-        strokeState.points.push(smoothed);
-      }
-    } else {
-      strokeState.points.push(smoothed);
-    }
-
+    // Push the point directly. 
+    // We do NOT interpolate here because pushing multiple points instantly
+    // causes the renderer (which only draws the last 8 points) to skip the gap!
+    // The quadratic curve drawer in canvasUtils will naturally bridge fast gaps.
+    strokeState.points.push(smoothed);
     strokeState.lastDrawnPoint = smoothed;
   }, []);
 
