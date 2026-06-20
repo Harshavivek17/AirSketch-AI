@@ -697,7 +697,7 @@ const App: React.FC = () => {
         className="fixed bottom-4 right-4 z-50 text-right pointer-events-none"
       >
         <h1 className="font-display text-sm md:text-base font-bold tracking-wider text-neon-cyan neon-text">
-          AIRSKETCH AI
+          AIRSKETCH.ai
         </h1>
         <p className="text-[9px] md:text-[10px] text-white/25 mt-0.5 font-sans">
           AI-powered air drawing with hand gesture control

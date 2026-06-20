@@ -93,7 +93,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
             {/* Header */}
             <div className="text-center mb-6">
               <h2 className="font-display text-2xl font-bold text-neon-cyan neon-text mb-1">
-                AirSketch AI
+                AirSketch.ai
               </h2>
               <p className="text-xs text-white/40 font-sans">Learn the gestures</p>
             </div>
