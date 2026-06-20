@@ -24,7 +24,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
   return (
     <div className="space-y-2.5">
       {/* Color grid */}
-      <div className="grid grid-cols-4 gap-2">
+      <div className="flex flex-wrap gap-2.5">
         {COLOR_PRESETS.map((preset) => {
           const isActive = selectedColor === preset.color;
           return (
@@ -70,19 +70,6 @@ const ColorPicker: React.FC<ColorPickerProps> = ({
                   outlineOffset: '1px',
                 }}
               />
-              <span
-                className={`text-[9px] transition-colors font-medium ${
-                  isActive
-                    ? isLight
-                      ? 'text-[#1a2b40] font-bold'
-                      : isDarkNeumorphic
-                      ? 'text-[#00ffff] font-bold'
-                      : 'text-white/80 font-bold'
-                    : labelColor
-                }`}
-              >
-                {preset.name}
-              </span>
             </button>
           );
         })}

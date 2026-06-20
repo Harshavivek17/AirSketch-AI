@@ -395,7 +395,20 @@ const ControlsPanel: React.FC<ControlsPanelProps> = ({
         onToggle={toggleSection}
         theme={theme}
       >
-        <div className="space-y-3">
+        <div className="space-y-4">
+          {/* Brush Preview Area */}
+          <div className="w-full h-12 flex items-center justify-center my-2 pointer-events-none">
+            <svg width="80%" height="40" viewBox="0 0 200 40" className="drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+              <path 
+                d="M10,20 Q50,-10 100,20 T190,20" 
+                fill="none" 
+                stroke={settings.rainbowBrush ? '#00ffff' : settings.strokeColor} 
+                strokeWidth={settings.brushSize} 
+                strokeLinecap="round" 
+              />
+            </svg>
+          </div>
+          
           <SliderControl
             label="Brush Size"
             value={settings.brushSize}

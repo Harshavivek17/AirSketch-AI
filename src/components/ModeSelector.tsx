@@ -9,9 +9,9 @@ interface ModeSelectorProps {
 }
 
 const modes: { id: DrawingMode; label: string; icon: string; shortcut: string }[] = [
-  { id: 'draw', label: 'Draw', icon: '✏️', shortcut: 'D' },
-  { id: 'eraser', label: 'Eraser', icon: '🧹', shortcut: 'E' },
-  { id: 'pointer', label: 'Pointer', icon: '👆', shortcut: 'P' },
+  { id: 'draw', label: 'Draw', icon: '☝️', shortcut: 'D' },
+  { id: 'pointer', label: 'Pointer', icon: '✌️', shortcut: 'P' },
+  { id: 'eraser', label: 'Erase', icon: '🖐️', shortcut: 'E' },
 ];
 
 const ModeSelector: React.FC<ModeSelectorProps> = ({
@@ -52,25 +52,10 @@ const ModeSelector: React.FC<ModeSelectorProps> = ({
           <button
             key={m.id}
             onClick={() => onModeChange(m.id)}
-            className={`flex-1 flex flex-col items-center gap-0.5 py-2 px-1 rounded-xl transition-all duration-200 ${buttonClass}`}
+            title={`${m.label} (${m.shortcut})`}
+            className={`flex-1 flex items-center justify-center py-3 px-1 rounded-xl transition-all duration-200 ${buttonClass}`}
           >
-            <span className="text-base">{m.icon}</span>
-            <span className="text-[10px] font-semibold">{m.label}</span>
-            <span
-              className={`text-[8px] font-mono ${
-                isActive
-                  ? isLight
-                    ? 'text-[#0088FF]/60'
-                    : isDarkNeumorphic
-                    ? 'text-[#00ffff]/60'
-                    : 'text-neon-cyan/50'
-                  : isLight
-                  ? 'text-black/20'
-                  : 'text-white/20'
-              }`}
-            >
-              {m.shortcut}
-            </span>
+            <span className={`text-xl ${isActive ? 'drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]' : 'grayscale opacity-60'}`}>{m.icon}</span>
           </button>
         );
       })}
